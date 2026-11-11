@@ -14,7 +14,7 @@ const SITE = {
      Misol: telegram: "https://t.me/username"                    */
   links: {
     telegram: "https://t.me/murodulla_xamidullayevich",
-    linkedin: "",
+    linkedin: "https://www.linkedin.com/in/murodulla-xamidullayevich-3547743a8/",
     github:   "https://github.com/murodullaxamidullayevich-cyber",
     email:    "murodullaxamidullayevich@gmail.com"
   },
