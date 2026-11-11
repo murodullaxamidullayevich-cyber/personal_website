@@ -21,6 +21,7 @@
       <a href="#projects" data-i18n="nav.projects"></a>
       <a href="#journey" data-i18n="nav.journey"></a>
       <a href="#contact" data-i18n="nav.contact"></a>
+      <a href="#feedback" data-i18n="nav.feedback"></a>
     </nav>
     <div class="lang" role="group" aria-label="Language">
       <button type="button" id="lang-uz" data-lang="uz">UZ</button>
@@ -92,6 +93,34 @@
     <h2 data-i18n="contact.title"></h2>
     <p class="sub" data-i18n="contact.sub"></p>
     <ul class="contacts" id="contacts"></ul>
+  </section>
+
+  <!-- FEEDBACK -->
+  <section id="feedback" class="section wrap">
+    <p class="label">~/feedback</p>
+    <h2 data-i18n="feedback.title"></h2>
+    <p class="sub" data-i18n="feedback.sub"></p>
+    <form class="fb" id="fb-form" novalidate>
+      <div class="fb-row">
+        <label class="fb-field" for="fb-name">
+          <span data-i18n="feedback.name"></span>
+          <input type="text" id="fb-name" name="name" maxlength="80" autocomplete="name">
+        </label>
+        <div class="fb-field">
+          <span id="fb-rating-label" data-i18n="feedback.rating"></span>
+          <div class="stars" id="fb-stars" role="radiogroup" aria-labelledby="fb-rating-label"></div>
+        </div>
+      </div>
+      <label class="fb-field" for="fb-message">
+        <span data-i18n="feedback.message"></span>
+        <textarea id="fb-message" name="message" rows="5" maxlength="2000" required></textarea>
+      </label>
+      <input type="text" id="fb-honey" name="_honey" tabindex="-1" autocomplete="off" class="fb-honey" aria-hidden="true">
+      <div class="fb-actions">
+        <button type="submit" class="btn primary" id="fb-submit" data-i18n="feedback.send"></button>
+        <p class="fb-status" id="fb-status" role="status" aria-live="polite"></p>
+      </div>
+    </form>
   </section>
 
 </main>
