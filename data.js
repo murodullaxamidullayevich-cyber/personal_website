@@ -19,6 +19,11 @@ const SITE = {
     email:    "murodullaxamidullayevich@gmail.com"
   },
 
+  /* ---------- FEEDBACK ----------
+     Fikrlar FormSubmit orqali shu emailga keladi.
+     Birinchi xabardan keyin Gmail'ga tasdiqlash xati keladi — "Activate" bosiladi.   */
+  feedbackEmail: "murodullaxamidullayevich@gmail.com",
+
   /* ---------- HERO TERMINALI ---------- */
   terminal: {
     uz: [
@@ -65,12 +70,45 @@ const SITE = {
   projects: [
     {
       title: "PurchaseManagerUZ",
+      featured: true,
       status: "done",
-      desc: {
-        uz: "Do'kon va ombor uchun boshqaruv tizimi: tovarlar, xaridlar va hisobotlar. O'zbek tilidagi Windows ilovasi.",
-        en: "A shop and inventory management system: products, purchases and reports. A Windows desktop app in Uzbek."
+      context: {
+        uz: "Kompaniya xaridlarini boshqarish tizimi · Dasturlash 2 fanidan yakuniy loyiha · 3 kishilik jamoa · May 2026",
+        en: "Company purchase management system · Final project for Programming 2 · Team of 3 · May 2026"
       },
-      tech: ["C++/CLI", "Windows Forms", ".NET"],
+      desc: {
+        uz: "Kompaniyaning xarid jarayonini qog'ozdan raqamga o'tkazadigan Windows ilovasi. Xodimlar, mahsulotlar, buyurtmalar va haftalik hisobotlar bitta SQL Server bazasida saqlanadi, hammasi o'zbek tilidagi qulay oynalar orqali boshqariladi.",
+        en: "A Windows desktop app that moves a company's purchasing process from paper to a database. Employees, products, purchase orders and weekly reports live in one SQL Server database and are managed through an Uzbek-language interface."
+      },
+      highlights: [
+        { uz: "Tizimga kirish: login va parol tekshiruvi, parolni ko'rsatish/yashirish tugmasi, Enter bilan o'tish.",
+          en: "Sign-in screen: login and password check, show/hide password toggle, Enter-key navigation." },
+        { uz: "Asosiy panel: to'rtta modulga kirish va real vaqtda yangilanadigan sana va soat.",
+          en: "Main dashboard: entry to all four modules with a live date and clock." },
+        { uz: "Xodimlar: qo'shish va o'chirish, JSHSHR bo'yicha jonli qidiruv, 14 xonali JSHSHR va +998 telefon tekshiruvi.",
+          en: "Employees: add and remove staff, live search by personal ID, 14-digit ID and +998 phone validation." },
+        { uz: "Mahsulotlar: nomi, brend, model, narx, kafolat muddati va kategoriya; narx faqat son ekani tekshiriladi.",
+          en: "Products: name, brand, model, price, warranty and category, with numeric price validation." },
+        { uz: "Buyurtmalar: summa avtomatik hisoblanadi; holatlar: yangi, jarayonda, yetkazilgan, yakunlangan, bekor qilingan. Jami, bugungi, kutilayotgan va yakunlangan buyurtmalar hisoblagichlari, umumiy xarajat (bekor qilinganlarsiz) va yetkazuvchi, mahsulot yoki izoh bo'yicha qidiruv.",
+          en: "Purchase orders: automatic totals; statuses new, in progress, delivered, completed, cancelled. Counters for total, today's, pending and completed orders, overall spend excluding cancelled orders, and search by supplier, product or note." },
+        { uz: "Hisobot: 5 ta mahsulot turi bo'yicha haftaning har kuni uchun xaridlar kiritiladi, bazaga saqlanadi va ustunli diagrammada ko'rsatiladi.",
+          en: "Reports: daily purchases for five product types are entered for each weekday, saved to the database and drawn as a column chart." },
+        { uz: "Ma'lumotlar bazasi: SQL Server Express, 4 ta jadval; barcha so'rovlar parametrlangan (SQL injection'dan himoya).",
+          en: "Database: SQL Server Express with 4 tables; every query is parameterized to guard against SQL injection." }
+      ],
+      images: [
+        { src: "images/purchase-manager/orders.webp",
+          alt: { uz: "Buyurtmalar oynasi: yangi buyurtma formasi, hisoblagichlar va buyurtmalar jadvali", en: "Orders window: new order form, counters and order table" } },
+        { src: "images/purchase-manager/report.webp",
+          alt: { uz: "Hisobot oynasi: haftalik xaridlar diagrammasi", en: "Report window: weekly purchases chart" } },
+        { src: "images/purchase-manager/employees.webp",
+          alt: { uz: "Xodimlar oynasi: qo'shish, JSHSHR bo'yicha qidiruv va ro'yxat (sinov ma'lumotlari)", en: "Employees window: add form, ID search and staff list (test data)" } },
+        { src: "images/purchase-manager/main.webp",
+          alt: { uz: "Asosiy boshqaruv paneli", en: "Main dashboard" } },
+        { src: "images/purchase-manager/login.webp",
+          alt: { uz: "Tizimga kirish oynasi", en: "Sign-in window" } }
+      ],
+      tech: ["C++/CLI", "Windows Forms", ".NET Framework 4.7.2", "SQL Server Express", "ADO.NET", "Chart control", "Visual Studio"],
       github: "",
       demo: ""
     },
@@ -106,9 +144,10 @@ const SITE = {
     { date: "2026", type: "project",
       title: { uz: "AI agent ustida ish boshlandi", en: "Started the AI agent project" },
       text:  { uz: "Python'da shaxsiy AI agent yaratish.", en: "Building a personal AI agent in Python." } },
-    { date: "2026", type: "project",
-      title: { uz: "PurchaseManagerUZ tugallandi", en: "Finished PurchaseManagerUZ" },
-      text:  { uz: "C++/CLI'da do'kon boshqaruv tizimi.", en: "A shop management system in C++/CLI." } },
+    { date: "05.2026", type: "project",
+      title: { uz: "PurchaseManagerUZ topshirildi", en: "Delivered PurchaseManagerUZ" },
+      text:  { uz: "Dasturlash 2 fanidan yakuniy loyiha: C++/CLI va SQL Server'da kompaniya xaridlarini boshqarish tizimi, 3 kishilik jamoada.",
+               en: "Final project for Programming 2: a company purchase management system in C++/CLI and SQL Server, built in a team of 3." } },
     { date: "16.10.2026", type: "certificate",
       title: { uz: "Prompt Engineering — Five Million AI Leaders", en: "Prompt Engineering — Five Million AI Leaders" },
       text:  { uz: "O'zbekiston Raqamli texnologiyalar vazirligi va Dubai Future Foundation qo'shma dasturi. ID: 5MP 1645210",
@@ -125,7 +164,7 @@ const SITE = {
   /* ---------- INTERFEYS MATNLARI ---------- */
   ui: {
     uz: {
-      nav: { about: "Men haqimda", skills: "Ko'nikmalar", projects: "Loyihalar", journey: "Yo'l", contact: "Aloqa" },
+      nav: { about: "Men haqimda", skills: "Ko'nikmalar", projects: "Loyihalar", journey: "Yo'l", contact: "Aloqa", feedback: "Fikr" },
       hero: {
         eyebrow: "Sun'iy intellekt talabasi · TATU · Toshkent",
         lead: "Dasturiy ta'minot va sun'iy intellekt bilan shug'ullanaman. Bu yerda loyihalarim, bilimlarim va erishgan natijalarim jamlangan.",
@@ -143,7 +182,8 @@ const SITE = {
         title: "Loyihalar",
         sub: "Tugallangan, jarayondagi va rejadagi ishlar.",
         status: { done: "Tugallangan", progress: "Jarayonda", planned: "Rejada" },
-        code: "Kod", demo: "Demo"
+        code: "Kod", demo: "Demo",
+        features: "Imkoniyatlar"
       },
       journey: {
         title: "Yo'l",
@@ -160,10 +200,23 @@ const SITE = {
         copy: "Nusxa olish",
         copied: "Nusxa olindi"
       },
+      feedback: {
+        title: "Fikr qoldiring",
+        sub: "Sayt, loyihalarim yoki hamkorlik haqida fikringizni yozing. Xabar to'g'ridan-to'g'ri menga keladi va saytda ko'rinmaydi.",
+        name: "Ismingiz (ixtiyoriy)",
+        rating: "Baho (ixtiyoriy)",
+        star: "yulduz",
+        message: "Xabar",
+        send: "Yuborish",
+        sending: "Yuborilmoqda…",
+        ok: "Rahmat! Fikringiz yuborildi.",
+        empty: "Xabar maydonini to'ldiring.",
+        fail: "Yuborib bo'lmadi. Internetni tekshirib, qayta urinib ko'ring yoki Telegram orqali yozing."
+      },
       footer: { made: "Toshkentda yaratildi" }
     },
     en: {
-      nav: { about: "About", skills: "Skills", projects: "Projects", journey: "Journey", contact: "Contact" },
+      nav: { about: "About", skills: "Skills", projects: "Projects", journey: "Journey", contact: "Contact", feedback: "Feedback" },
       hero: {
         eyebrow: "AI student · TATU · Tashkent",
         lead: "I work on software and artificial intelligence. This is where I keep my projects, skills and results.",
@@ -181,7 +234,8 @@ const SITE = {
         title: "Projects",
         sub: "Finished, in-progress and planned work.",
         status: { done: "Completed", progress: "In progress", planned: "Planned" },
-        code: "Code", demo: "Demo"
+        code: "Code", demo: "Demo",
+        features: "Features"
       },
       journey: {
         title: "Journey",
@@ -197,6 +251,19 @@ const SITE = {
         missing: "not added yet",
         copy: "Copy",
         copied: "Copied"
+      },
+      feedback: {
+        title: "Leave feedback",
+        sub: "Share your thoughts on the site, my projects or a possible collaboration. Messages come straight to me and are not shown on the site.",
+        name: "Your name (optional)",
+        rating: "Rating (optional)",
+        star: "star",
+        message: "Message",
+        send: "Send",
+        sending: "Sending…",
+        ok: "Thank you! Your feedback was sent.",
+        empty: "Please write a message.",
+        fail: "Couldn't send it. Check your connection and try again, or message me on Telegram."
       },
       footer: { made: "Made in Tashkent" }
     }
