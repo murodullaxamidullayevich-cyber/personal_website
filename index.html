@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Murodulla Shonazarov</title>
+<meta name="description" content="Murodulla Shonazarov — TATU talabasi. Loyihalar, ko'nikmalar, sertifikatlar va aloqa.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sora:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <a class="brand" href="#top" aria-label="Murodulla Shonazarov">MS<span>.</span></a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#about" data-i18n="nav.about"></a>
+      <a href="#skills" data-i18n="nav.skills"></a>
+      <a href="#projects" data-i18n="nav.projects"></a>
+      <a href="#journey" data-i18n="nav.journey"></a>
+      <a href="#contact" data-i18n="nav.contact"></a>
+    </nav>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" id="lang-uz" data-lang="uz">UZ</button>
+      <button type="button" id="lang-en" data-lang="en">EN</button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero wrap">
+    <div class="hero-text">
+      <p class="eyebrow" data-i18n="hero.eyebrow"></p>
+      <h1 id="hero-name"></h1>
+      <p class="lead" data-i18n="hero.lead"></p>
+      <div class="cta">
+        <a class="btn primary" href="#projects" data-i18n="hero.cta1"></a>
+        <a class="btn" href="#contact" data-i18n="hero.cta2"></a>
+        <span class="btn disabled" aria-disabled="true" data-i18n="hero.cv"></span>
+      </div>
+    </div>
+    <div class="term" aria-label="Terminal">
+      <div class="term-bar"><i></i><i></i><i></i><span>~/murodulla</span></div>
+      <pre id="term-body"></pre>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="section wrap">
+    <p class="label">~/about</p>
+    <h2 data-i18n="about.title"></h2>
+    <div class="about-grid">
+      <div class="about-text">
+        <p data-i18n="about.p1"></p>
+        <p data-i18n="about.p2"></p>
+      </div>
+      <dl class="facts" id="facts"></dl>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills" class="section wrap">
+    <p class="label">~/skills</p>
+    <h2 data-i18n="skills.title"></h2>
+    <div class="skills" id="skills-list"></div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="section wrap">
+    <p class="label">~/projects</p>
+    <h2 data-i18n="projects.title"></h2>
+    <p class="sub" data-i18n="projects.sub"></p>
+    <div class="projects" id="projects-list"></div>
+  </section>
+
+  <!-- JOURNEY: education, certificates, achievements -->
+  <section id="journey" class="section wrap">
+    <p class="label">~/journey</p>
+    <h2 data-i18n="journey.title"></h2>
+    <p class="sub" data-i18n="journey.sub"></p>
+    <div class="filters" id="filters" role="group"></div>
+    <ol class="timeline" id="timeline"></ol>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="section wrap">
+    <p class="label">~/contact</p>
+    <h2 data-i18n="contact.title"></h2>
+    <p class="sub" data-i18n="contact.sub"></p>
+    <ul class="contacts" id="contacts"></ul>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span id="footer-copy"></span>
+    <span data-i18n="footer.made"></span>
+  </div>
+</footer>
+
+<script src="data.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
