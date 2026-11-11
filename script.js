@@ -74,16 +74,46 @@ function renderProjects() {
     const links = [];
     if (p.github) links.push(el("a", { href: p.github, target: "_blank", rel: "noopener" }, t("projects.code") + " ↗"));
     if (p.demo) links.push(el("a", { href: p.demo, target: "_blank", rel: "noopener" }, t("projects.demo") + " ↗"));
-    return el("article", { class: "project" },
+    const body = [
       el("div", { class: "project-head" },
         el("h3", {}, tr(p.title)),
         el("span", { class: "status s-" + p.status }, t("projects.status." + p.status))
       ),
-      el("p", {}, tr(p.desc)),
+      p.context ? el("p", { class: "project-context" }, tr(p.context)) : null,
+      el("p", { class: "project-desc" }, tr(p.desc)),
+      p.highlights ? el("div", { class: "highlights" },
+        el("h4", {}, t("projects.features")),
+        el("ul", {}, p.highlights.map((h) => el("li", {}, tr(h))))
+      ) : null,
       el("ul", { class: "tags small" }, p.tech.map((x) => el("li", {}, x))),
       links.length ? el("div", { class: "project-links" }, links) : null
+    ];
+    if (!p.featured || !p.images) return el("article", { class: "project" }, body);
+    return el("article", { class: "project featured" },
+      el("div", { class: "project-text" }, body),
+      renderGallery(p)
     );
   }));
+}
+
+/* Loyiha skrinshotlari: katta rasm + kichik rasmlar */
+function renderGallery(p) {
+  const main = el("img", { src: p.images[0].src, alt: tr(p.images[0].alt), loading: "lazy" });
+  const link = el("a", { class: "shot-main", href: p.images[0].src, target: "_blank", rel: "noopener" }, main);
+  const caption = el("figcaption", {}, tr(p.images[0].alt));
+  const thumbs = p.images.map((img, i) => {
+    const b = el("button", {
+      type: "button", class: "shot-thumb", id: "shot-" + i,
+      "aria-pressed": String(i === 0), "aria-label": tr(img.alt)
+    }, el("img", { src: img.src, alt: "", loading: "lazy" }));
+    b.addEventListener("click", () => {
+      main.src = img.src; main.alt = tr(img.alt);
+      link.href = img.src; caption.textContent = tr(img.alt);
+      b.parentNode.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    });
+    return b;
+  });
+  return el("figure", { class: "gallery" }, link, caption, el("div", { class: "shot-thumbs" }, thumbs));
 }
 
 function renderJourney() {
@@ -140,8 +170,67 @@ function renderContacts() {
   }));
 }
 
+/* ---------- Feedback formasi ---------- */
+let fbRating = 0;
+
+function renderStars() {
+  const box = $("fb-stars");
+  box.replaceChildren(...[1, 2, 3, 4, 5].map((n) => {
+    const b = el("button", {
+      type: "button", class: "star", id: "fb-star-" + n, role: "radio",
+      "aria-checked": String(fbRating === n), "aria-label": n + " " + t("feedback.star"),
+      "data-on": String(n <= fbRating)
+    }, "★");
+    b.addEventListener("click", () => { fbRating = fbRating === n ? 0 : n; renderStars(); });
+    return b;
+  }));
+}
+
+function setStatus(key, kind) {
+  const s = $("fb-status");
+  s.textContent = key ? t(key) : "";
+  s.dataset.kind = kind || "";
+}
+
+$("fb-form").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const message = $("fb-message").value.trim();
+  if (!message) { setStatus("feedback.empty", "error"); $("fb-message").focus(); return; }
+  if ($("fb-honey").value) return; // bot
+
+  const btn = $("fb-submit");
+  btn.disabled = true;
+  btn.textContent = t("feedback.sending");
+  setStatus("", "");
+  try {
+    const res = await fetch("https://formsubmit.co/ajax/" + SITE.feedbackEmail, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({
+        _subject: "Saytdan yangi fikr" + (fbRating ? " (" + fbRating + "★)" : ""),
+        _template: "table",
+        Ism: $("fb-name").value.trim() || "—",
+        Baho: fbRating ? fbRating + " / 5" : "—",
+        Xabar: message,
+        Til: lang
+      })
+    });
+    if (!res.ok) throw new Error(res.status);
+    $("fb-form").reset();
+    fbRating = 0;
+    renderStars();
+    setStatus("feedback.ok", "ok");
+  } catch (err) {
+    setStatus("feedback.fail", "error");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = t("feedback.send");
+  }
+});
+
 function renderAll() {
   renderStatic();
+  renderStars();
   renderTerminal();
   renderFacts();
   renderSkills();
