@@ -1,17 +1,19 @@
 /* ============================================================
    SAYT LOGIKASI — data.js'dagi ma'lumotlarni sahifaga chiqaradi,
-   tilni almashtiradi va filtrlarni boshqaradi.
+   tilni va mavzuni almashtiradi, "Ko'proq/Kamroq" ro'yxatlarini
+   va feedback formasini boshqaradi.
    ============================================================ */
 
+const LANGS = ["uz", "en", "ru"];
 let lang = "uz";
-let journeyFilter = "all";
+const expanded = new Set();   // ochilgan ro'yxatlar ("Ko'proq ko'rsatish" bosilganlar)
 
 try {
   const saved = localStorage.getItem("lang");
-  if (saved === "uz" || saved === "en") lang = saved;
+  if (LANGS.includes(saved)) lang = saved;
 } catch (e) { /* xotira yopiq bo'lsa, o'zbekcha qoladi */ }
 
-/* Matnni joriy tilda olish: {uz, en} bo'lsa tanlaydi, oddiy matn bo'lsa o'zini qaytaradi */
+/* Matnni joriy tilda olish: {uz, en, ru} bo'lsa tanlaydi, oddiy matn bo'lsa o'zini qaytaradi */
 const tr = (v) => (v && typeof v === "object" && !Array.isArray(v)) ? (v[lang] ?? v.uz) : v;
 
 /* "projects.status.done" kabi kalit bo'yicha interfeys matnini olish */
@@ -23,6 +25,7 @@ function el(tag, attrs = {}, ...children) {
   for (const [k, v] of Object.entries(attrs)) {
     if (v === false || v == null) continue;
     if (k === "class") node.className = v;
+    else if (k === "style") node.style.cssText = v;
     else node.setAttribute(k, v);
   }
   for (const c of children.flat()) {
@@ -34,6 +37,30 @@ function el(tag, attrs = {}, ...children) {
 
 const $ = (id) => document.getElementById(id);
 
+/* ---------- "Ko'proq / Kamroq" ----------
+   items: tayyor elementlar ro'yxati; limit: dastlab nechtasi ko'rinadi.
+   Qolganlari yashiriladi va ostida tugma chiqadi.                       */
+function moreToggle(key, items, limit, rerender) {
+  const hiddenCount = items.length - limit;
+  if (hiddenCount <= 0) return null;
+  const open = expanded.has(key);
+  items.forEach((node, i) => { if (i >= limit) node.hidden = !open; });
+  const btn = el("button", {
+    type: "button", class: "more-btn", id: "more-" + key,
+    "aria-expanded": String(open)
+  },
+    el("span", { class: "more-icon", "aria-hidden": "true" }, open ? "−" : "+"),
+    open ? t("less") : t("more") + " (" + hiddenCount + ")"
+  );
+  btn.addEventListener("click", () => {
+    if (expanded.has(key)) expanded.delete(key); else expanded.add(key);
+    rerender();
+    const again = $("more-" + key);
+    if (again) again.focus({ preventScroll: true });
+  });
+  return btn;
+}
+
 /* ---------- Bo'limlarni chizish ---------- */
 
 function renderStatic() {
@@ -44,10 +71,11 @@ function renderStatic() {
   document.querySelectorAll(".lang button").forEach((b) => {
     b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
   });
+  renderThemeButton();
 }
 
 function renderTerminal() {
-  const lines = SITE.terminal[lang].map(([cmd, out]) => [
+  const lines = (SITE.terminal[lang] || SITE.terminal.uz).map(([cmd, out]) => [
     el("span", { class: "cmd" }, cmd), "\n",
     el("span", { class: "out" }, out), "\n"
   ]);
@@ -70,10 +98,21 @@ function renderSkills() {
 }
 
 function renderProjects() {
-  $("projects-list").replaceChildren(...SITE.projects.map((p) => {
+  $("projects-list").replaceChildren(...SITE.projects.map((p, idx) => {
     const links = [];
     if (p.github) links.push(el("a", { href: p.github, target: "_blank", rel: "noopener" }, t("projects.code") + " ↗"));
     if (p.demo) links.push(el("a", { href: p.demo, target: "_blank", rel: "noopener" }, t("projects.demo") + " ↗"));
+
+    let highlights = null;
+    if (p.highlights) {
+      const items = p.highlights.map((h) => el("li", {}, tr(h)));
+      highlights = el("div", { class: "highlights" },
+        el("h4", {}, t("projects.features")),
+        el("ul", {}, items),
+        moreToggle("hl-" + idx, items, SITE.limits.highlights, renderProjects)
+      );
+    }
+
     const body = [
       el("div", { class: "project-head" },
         el("h3", {}, tr(p.title)),
@@ -81,29 +120,26 @@ function renderProjects() {
       ),
       p.context ? el("p", { class: "project-context" }, tr(p.context)) : null,
       el("p", { class: "project-desc" }, tr(p.desc)),
-      p.highlights ? el("div", { class: "highlights" },
-        el("h4", {}, t("projects.features")),
-        el("ul", {}, p.highlights.map((h) => el("li", {}, tr(h))))
-      ) : null,
+      highlights,
       el("ul", { class: "tags small" }, p.tech.map((x) => el("li", {}, x))),
       links.length ? el("div", { class: "project-links" }, links) : null
     ];
     if (!p.featured || !p.images) return el("article", { class: "project" }, body);
-    return el("article", { class: "project featured" },
+    return el("article", { class: "project featured" + (p.portrait ? " portrait" : "") },
       el("div", { class: "project-text" }, body),
-      renderGallery(p)
+      renderGallery(p, idx)
     );
   }));
 }
 
 /* Loyiha skrinshotlari: katta rasm + kichik rasmlar */
-function renderGallery(p) {
+function renderGallery(p, idx) {
   const main = el("img", { src: p.images[0].src, alt: tr(p.images[0].alt), loading: "lazy" });
   const link = el("a", { class: "shot-main", href: p.images[0].src, target: "_blank", rel: "noopener" }, main);
   const caption = el("figcaption", {}, tr(p.images[0].alt));
   const thumbs = p.images.map((img, i) => {
     const b = el("button", {
-      type: "button", class: "shot-thumb", id: "shot-" + i,
+      type: "button", class: "shot-thumb", id: "shot-" + idx + "-" + i,
       "aria-pressed": String(i === 0), "aria-label": tr(img.alt)
     }, el("img", { src: img.src, alt: "", loading: "lazy" }));
     b.addEventListener("click", () => {
@@ -113,34 +149,61 @@ function renderGallery(p) {
     });
     return b;
   });
-  return el("figure", { class: "gallery" }, link, caption, el("div", { class: "shot-thumbs" }, thumbs));
+  return el("figure", { class: "gallery" }, link, caption,
+    el("div", { class: "shot-thumbs", style: "--n:" + p.images.length }, thumbs));
 }
 
-function renderJourney() {
-  const types = ["all", "education", "certificate", "achievement", "project"];
-  $("filters").setAttribute("aria-label", t("journey.title"));
-  $("filters").replaceChildren(...types.map((ty) => {
-    const b = el("button", {
-      type: "button", id: "filter-" + ty, class: "chip",
-      "aria-pressed": String(journeyFilter === ty)
-    }, ty === "all" ? t("journey.all") : t("journey.types." + ty));
-    b.addEventListener("click", () => { journeyFilter = ty; renderJourney(); });
-    return b;
-  }));
-
-  const items = SITE.journey.filter((j) => journeyFilter === "all" || j.type === journeyFilter);
-  $("timeline").replaceChildren(...items.map((j) =>
-    el("li", { class: "tl t-" + j.type + (j.example ? " is-example" : "") },
+function renderEducation() {
+  const items = SITE.education.map((e) =>
+    el("li", { class: "tl" + (e.current ? " is-current" : "") },
       el("div", { class: "tl-meta" },
-        el("time", {}, j.date),
-        el("span", { class: "tl-type" }, t("journey.types." + j.type)),
-        j.example ? el("span", { class: "tl-example" }, t("journey.example")) : null
+        el("time", {}, e.years + (e.current ? t("education.current") : "")),
+        e.level ? el("span", {}, tr(e.level)) : null
       ),
-      el("h3", {}, tr(j.title)),
-      el("p", {}, tr(j.text)),
-      j.link ? el("a", { href: j.link, target: "_blank", rel: "noopener" }, t("journey.view") + " ↗") : null
+      el("h3", {}, tr(e.place)),
+      e.text ? el("p", {}, tr(e.text)) : null
     )
-  ));
+  );
+  $("education-list").replaceChildren(
+    el("ol", { class: "timeline" }, items),
+    moreToggle("edu", items, SITE.limits.education, renderEducation)
+  );
+}
+
+function renderCertificates() {
+  const items = SITE.certificates.map((c) =>
+    el("article", { class: "cert" },
+      el("div", { class: "cert-top" },
+        el("span", { class: "cert-issuer" }, tr(c.issuer)),
+        el("time", {}, c.date)
+      ),
+      el("h3", {}, tr(c.title)),
+      c.text ? el("p", {}, tr(c.text)) : null,
+      c.link ? el("a", { class: "cert-link", href: c.link, target: "_blank", rel: "noopener" }, t("certificates.view") + " ↗") : null
+    )
+  );
+  $("certificates-list").replaceChildren(
+    el("div", { class: "certs" }, items),
+    moreToggle("certs", items, SITE.limits.certificates, renderCertificates)
+  );
+}
+
+function renderAchievements() {
+  const list = SITE.achievements || [];
+  $("achievements").hidden = list.length === 0;
+  if (!list.length) return;
+  const items = list.map((a) =>
+    el("li", { class: "tl" },
+      el("div", { class: "tl-meta" }, el("time", {}, a.date)),
+      el("h3", {}, tr(a.title)),
+      a.text ? el("p", {}, tr(a.text)) : null,
+      a.link ? el("a", { href: a.link, target: "_blank", rel: "noopener" }, t("certificates.view") + " ↗") : null
+    )
+  );
+  $("achievements-list").replaceChildren(
+    el("ol", { class: "timeline" }, items),
+    moreToggle("ach", items, SITE.limits.certificates, renderAchievements)
+  );
 }
 
 function renderContacts() {
@@ -164,11 +227,31 @@ function renderContacts() {
       body = el("span", { class: "email-row" }, el("span", { class: "value" }, value), btn);
     } else {
       body = el("a", { class: "value", href: value, target: "_blank", rel: "noopener" },
-        value.replace(/^https?:\/\/(www\.)?/, "") + " ↗");
+        value.replace(/^https?:\/\/(www\.)?/, "").replace(/\/$/, "") + " ↗");
     }
     return el("li", {}, el("span", { class: "c-name" }, name), body);
   }));
 }
+
+/* ---------- Kunduzgi / tungi rejim ---------- */
+function currentTheme() {
+  return document.documentElement.getAttribute("data-theme") === "light" ? "light" : "dark";
+}
+
+function renderThemeButton() {
+  const next = currentTheme() === "dark" ? "light" : "dark";
+  const btn = $("theme-btn");
+  btn.textContent = next === "light" ? "☀" : "☾";
+  btn.setAttribute("aria-label", t("theme." + next));
+  btn.title = t("theme." + next);
+}
+
+$("theme-btn").addEventListener("click", () => {
+  const next = currentTheme() === "dark" ? "light" : "dark";
+  document.documentElement.setAttribute("data-theme", next);
+  try { localStorage.setItem("theme", next); } catch (e) {}
+  renderThemeButton();
+});
 
 /* ---------- Feedback formasi ---------- */
 let fbRating = 0;
@@ -192,10 +275,54 @@ function setStatus(key, kind) {
   s.dataset.kind = kind || "";
 }
 
+function formData() {
+  return {
+    name: $("fb-name").value.trim(),
+    contact: $("fb-contact").value.trim(),
+    rating: fbRating,
+    message: $("fb-message").value.trim(),
+    lang
+  };
+}
+
+/* 1) Telegram bot (Vercel funksiyasi) → 2) ishlamasa, FormSubmit orqali email */
+async function sendFeedback(d) {
+  if (SITE.feedbackApi) try {
+    const res = await fetch(SITE.feedbackApi, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(d)
+    });
+    const j = await res.json().catch(() => ({}));
+    if (res.ok && j.ok) return true;
+  } catch (e) { /* email'ga o'tamiz */ }
+
+  const res = await fetch("https://formsubmit.co/ajax/" + SITE.feedbackEmail, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", "Accept": "application/json" },
+    body: JSON.stringify({
+      _subject: "Saytdan yangi fikr" + (d.rating ? " (" + d.rating + "★)" : ""),
+      _template: "table",
+      Ism: d.name || "—",
+      Aloqa: d.contact || "—",
+      Baho: d.rating ? d.rating + " / 5" : "—",
+      Xabar: d.message,
+      Til: d.lang
+    })
+  });
+  return res.ok;
+}
+
+function resetForm() {
+  $("fb-form").reset();
+  fbRating = 0;
+  renderStars();
+}
+
 $("fb-form").addEventListener("submit", async (e) => {
   e.preventDefault();
-  const message = $("fb-message").value.trim();
-  if (!message) { setStatus("feedback.empty", "error"); $("fb-message").focus(); return; }
+  const d = formData();
+  if (!d.message) { setStatus("feedback.empty", "error"); $("fb-message").focus(); return; }
   if ($("fb-honey").value) return; // bot
 
   const btn = $("fb-submit");
@@ -203,22 +330,8 @@ $("fb-form").addEventListener("submit", async (e) => {
   btn.textContent = t("feedback.sending");
   setStatus("", "");
   try {
-    const res = await fetch("https://formsubmit.co/ajax/" + SITE.feedbackEmail, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({
-        _subject: "Saytdan yangi fikr" + (fbRating ? " (" + fbRating + "★)" : ""),
-        _template: "table",
-        Ism: $("fb-name").value.trim() || "—",
-        Baho: fbRating ? fbRating + " / 5" : "—",
-        Xabar: message,
-        Til: lang
-      })
-    });
-    if (!res.ok) throw new Error(res.status);
-    $("fb-form").reset();
-    fbRating = 0;
-    renderStars();
+    if (!(await sendFeedback(d))) throw new Error("send failed");
+    resetForm();
     setStatus("feedback.ok", "ok");
   } catch (err) {
     setStatus("feedback.fail", "error");
@@ -228,6 +341,18 @@ $("fb-form").addEventListener("submit", async (e) => {
   }
 });
 
+/* Telegram'ni xabar tayyor holda ochadi; xabar tashrif buyuruvchining o'z akkauntidan ketadi */
+$("fb-telegram").addEventListener("click", () => {
+  const d = formData();
+  const parts = [t("feedback.tgIntro")];
+  if (d.rating) parts.push("★".repeat(d.rating) + " (" + d.rating + "/5)");
+  if (d.message) parts.push(d.message);
+  if (d.name) parts.push("— " + d.name);
+  const url = "https://t.me/" + SITE.telegramUser + "?text=" + encodeURIComponent(parts.join("\n\n"));
+  window.open(url, "_blank", "noopener");
+});
+
+/* ---------- Hammasini chizish ---------- */
 function renderAll() {
   renderStatic();
   renderStars();
@@ -235,7 +360,9 @@ function renderAll() {
   renderFacts();
   renderSkills();
   renderProjects();
-  renderJourney();
+  renderEducation();
+  renderCertificates();
+  renderAchievements();
   renderContacts();
 }
 
