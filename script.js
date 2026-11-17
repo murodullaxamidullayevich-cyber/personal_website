@@ -164,10 +164,10 @@ function renderEducation() {
       e.text ? el("p", {}, tr(e.text)) : null
     )
   );
-  $("education-list").replaceChildren(
+  $("education-list").replaceChildren(...[
     el("ol", { class: "timeline" }, items),
     moreToggle("edu", items, SITE.limits.education, renderEducation)
-  );
+  ].filter(Boolean));
 }
 
 function renderCertificates() {
@@ -182,10 +182,10 @@ function renderCertificates() {
       c.link ? el("a", { class: "cert-link", href: c.link, target: "_blank", rel: "noopener" }, t("certificates.view") + " ↗") : null
     )
   );
-  $("certificates-list").replaceChildren(
+  $("certificates-list").replaceChildren(...[
     el("div", { class: "certs" }, items),
     moreToggle("certs", items, SITE.limits.certificates, renderCertificates)
-  );
+  ].filter(Boolean));
 }
 
 function renderAchievements() {
@@ -200,10 +200,10 @@ function renderAchievements() {
       a.link ? el("a", { href: a.link, target: "_blank", rel: "noopener" }, t("certificates.view") + " ↗") : null
     )
   );
-  $("achievements-list").replaceChildren(
+  $("achievements-list").replaceChildren(...[
     el("ol", { class: "timeline" }, items),
     moreToggle("ach", items, SITE.limits.certificates, renderAchievements)
-  );
+  ].filter(Boolean));
 }
 
 function renderContacts() {
