@@ -24,6 +24,25 @@
   /* O'lchamlar */
   --max: 1120px;
   --radius: 10px;
+  --nav-bg: rgba(14, 18, 23, .88);
+  --shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
+}
+
+/* Kunduzgi rejim: xuddi shu tokenlar, och qiymatlar bilan */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg:        #F5F6F8;
+  --bg-raise:  #FFFFFF;
+  --line:      #DCE1E8;
+  --fg:        #131920;
+  --muted:     #586374;
+  --accent:    #B9790F;
+  --accent-ink:#FFFFFF;
+  --ok:        #1E8550;
+  --wip:       #B85A16;
+  --plan:      #3A64A0;
+  --nav-bg: rgba(245, 246, 248, .88);
+  --shadow: 0 24px 48px -28px rgba(20, 30, 45, .25);
 }
 
 * { box-sizing: border-box; }
@@ -71,7 +90,7 @@ a { color: inherit; }
   position: sticky;
   top: env(safe-area-inset-top, 0px);
   z-index: 5;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  background: var(--nav-bg);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line);
 }
@@ -118,7 +137,7 @@ a { color: inherit; }
 
 @media (max-width: 760px) {
   .nav-inner { flex-wrap: wrap; height: auto; padding-block: 12px; row-gap: 10px; }
-  .lang { margin-left: auto; }
+  .nav-tools { margin-left: auto; }
   .nav-links {
     order: 3;
     width: 100%;
@@ -183,7 +202,7 @@ h1 {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
-  box-shadow: 0 30px 60px -30px rgba(0, 0, 0, .6);
+  box-shadow: var(--shadow);
 }
 .term-bar {
   display: flex;
@@ -273,8 +292,8 @@ h3 {
 /* Skills */
 .skills {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 36px;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 32px;
   margin-top: 28px;
 }
 .skill-group h3 { margin-bottom: 14px; font-size: 16px; color: var(--muted); font-weight: 500; }
@@ -335,7 +354,7 @@ h3 {
   cursor: pointer;
 }
 .chip:hover { color: var(--fg); }
-.chip[aria-pressed="true"] { color: var(--accent-ink); background: var(--fg); border-color: var(--fg); }
+.chip[aria-pressed="true"] { color: var(--bg); background: var(--fg); border-color: var(--fg); }
 
 .timeline { list-style: none; margin: 0; padding: 0; max-width: 760px; }
 .tl {
@@ -465,7 +484,7 @@ h3 {
 }
 .shot-main img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .gallery figcaption { font-size: 13px; color: var(--muted); }
-.shot-thumbs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+.shot-thumbs { display: grid; grid-template-columns: repeat(var(--n, 5), minmax(0, 1fr)); gap: 8px; }
 .shot-thumb {
   padding: 0;
   border: 1px solid var(--line);
@@ -481,7 +500,7 @@ h3 {
 .shot-thumb:hover { opacity: .85; }
 .shot-thumb[aria-pressed="true"] { opacity: 1; border-color: var(--accent); }
 @media (max-width: 900px) {
-  .project.featured { grid-template-columns: minmax(0, 1fr); }
+  .project.featured, .project.featured.portrait { grid-template-columns: minmax(0, 1fr); }
   .gallery { order: -1; }
 }
 
@@ -522,3 +541,105 @@ h3 {
 .fb-status { margin: 0; font-size: 14px; color: var(--muted); }
 .fb-status[data-kind="ok"] { color: var(--ok); }
 .fb-status[data-kind="error"] { color: var(--wip); }
+
+/* Navbar asboblari: mavzu tugmasi + til */
+.nav-tools { display: flex; align-items: center; gap: 10px; }
+.theme-btn {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+  color: var(--fg);
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color .15s, transform .2s;
+}
+.theme-btn:hover { border-color: var(--muted); transform: rotate(-15deg); }
+@media (max-width: 1040px) and (min-width: 761px) {
+  .nav-links { gap: 14px; font-size: 13px; }
+}
+
+/* "Ko'proq / Kamroq" tugmasi */
+.more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  font: 500 13px/1 var(--body);
+  color: var(--accent);
+  background: none;
+  border: 1px dashed color-mix(in srgb, var(--accent) 55%, var(--line));
+  border-radius: 999px;
+  padding: 8px 14px 8px 8px;
+  cursor: pointer;
+  transition: background .15s;
+}
+.more-btn:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+.more-icon {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font: 600 15px/1 var(--mono);
+}
+.highlights .more-btn { margin-top: 12px; }
+
+/* Tik (portret) galereya: telefon videosi kabi */
+.project.featured.portrait { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+.portrait .shot-main { aspect-ratio: 9 / 16; max-width: 340px; background: #0b0e12; }
+.portrait .shot-main img { object-fit: cover; }
+.portrait .gallery figcaption, .portrait .shot-thumbs { max-width: 340px; }
+.portrait .shot-thumb { aspect-ratio: 9 / 16; background: #0b0e12; }
+@media (max-width: 900px) {
+  .portrait .gallery { justify-items: center; }
+  .portrait .shot-main, .portrait .gallery figcaption, .portrait .shot-thumbs { width: min(100%, 300px); }
+}
+
+/* Ta'lim: hozirgi o'qish joyi */
+.tl.is-current::before { border-color: var(--accent); background: var(--accent); }
+.tl h3 { line-height: 1.35; }
+
+/* Sertifikatlar */
+.certs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+.cert {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 20px;
+  background: var(--bg-raise);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+.cert-top { display: flex; justify-content: space-between; gap: 10px; font: 12px/1.4 var(--mono); color: var(--muted); }
+.cert-top time { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.cert-issuer { color: var(--accent); }
+.cert h3 { font-size: 17px; line-height: 1.3; }
+.cert p { margin: 0; font-size: 14px; color: var(--muted); flex: 1; }
+.cert-link { color: var(--accent); text-decoration: none; font: 500 14px var(--body); }
+.cert-link:hover { text-decoration: underline; }
+
+/* Feedback: Telegram tugmasi va izoh */
+.btn.tg { background: none; cursor: pointer; font-family: var(--body); }
+.btn.tg::before { content: "✈"; margin-right: 8px; color: var(--accent); }
+.fb-hint { margin: -4px 0 0; font-size: 13px; color: var(--muted); max-width: 60ch; }
+
+[hidden] { display: none !important; }
+.project-head { flex-wrap: wrap; }
+.project-head h3 { min-width: 0; flex: 1 1 200px; }
+/* Loyihalar bitta ustunda: har biri to'liq kenglikda */
+.projects { grid-template-columns: minmax(0, 1fr); }
+.project:not(.featured) .project-desc { max-width: 72ch; }
+@media (min-width: 900px) {
+  .project:not(.featured) .highlights ul { grid-template-columns: 1fr 1fr; column-gap: 32px; }
+}
