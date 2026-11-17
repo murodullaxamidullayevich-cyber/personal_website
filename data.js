@@ -60,7 +60,7 @@ const SITE = {
     { k: { uz: "Yo'nalish", en: "Focus", ru: "Направление" },
       v: { uz: "Sun'iy intellekt, machine learning", en: "Artificial intelligence, machine learning", ru: "Искусственный интеллект, машинное обучение" } },
     { k: { uz: "Tillar", en: "Languages", ru: "Языки" },
-      v: { uz: "O'zbek, ingliz, rus", en: "Uzbek, English, Russian", ru: "Узбекский, английский, русский" } }
+      v: { uz: "O'zbek, ingliz", en: "Uzbek, English", ru: "Узбекский, английский" } }
   ],
 
   /* ---------- KO'NIKMALAR ---------- */
