@@ -1,10 +1,21 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="uz" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Murodulla Shonazarov</title>
-<meta name="description" content="Murodulla Shonazarov — TATU talabasi. Loyihalar, ko'nikmalar, sertifikatlar va aloqa.">
+<meta name="description" content="Murodulla Shonazarov — TATU, sun'iy intellekt talabasi. Loyihalar, ko'nikmalar, ta'lim, sertifikatlar va aloqa.">
+<script>
+  /* Mavzuni sahifa chizilishidan oldin qo'yamiz, shunda miltillash bo'lmaydi */
+  (function () {
+    var t = null;
+    try { t = localStorage.getItem("theme"); } catch (e) {}
+    if (t !== "light" && t !== "dark") {
+      t = window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+    }
+    document.documentElement.setAttribute("data-theme", t);
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Sora:wght@500;600;700&display=swap">
@@ -19,13 +30,18 @@
       <a href="#about" data-i18n="nav.about"></a>
       <a href="#skills" data-i18n="nav.skills"></a>
       <a href="#projects" data-i18n="nav.projects"></a>
-      <a href="#journey" data-i18n="nav.journey"></a>
+      <a href="#education" data-i18n="nav.education"></a>
+      <a href="#certificates" data-i18n="nav.certificates"></a>
       <a href="#contact" data-i18n="nav.contact"></a>
       <a href="#feedback" data-i18n="nav.feedback"></a>
     </nav>
-    <div class="lang" role="group" aria-label="Language">
-      <button type="button" id="lang-uz" data-lang="uz">UZ</button>
-      <button type="button" id="lang-en" data-lang="en">EN</button>
+    <div class="nav-tools">
+      <button type="button" class="theme-btn" id="theme-btn"></button>
+      <div class="lang" role="group" aria-label="Language">
+        <button type="button" id="lang-uz" data-lang="uz">UZ</button>
+        <button type="button" id="lang-en" data-lang="en">EN</button>
+        <button type="button" id="lang-ru" data-lang="ru">RU</button>
+      </div>
     </div>
   </div>
 </header>
@@ -78,13 +94,27 @@
     <div class="projects" id="projects-list"></div>
   </section>
 
-  <!-- JOURNEY: education, certificates, achievements -->
-  <section id="journey" class="section wrap">
-    <p class="label">~/journey</p>
-    <h2 data-i18n="journey.title"></h2>
-    <p class="sub" data-i18n="journey.sub"></p>
-    <div class="filters" id="filters" role="group"></div>
-    <ol class="timeline" id="timeline"></ol>
+  <!-- EDUCATION -->
+  <section id="education" class="section wrap">
+    <p class="label">~/education</p>
+    <h2 data-i18n="education.title"></h2>
+    <p class="sub" data-i18n="education.sub"></p>
+    <div id="education-list"></div>
+  </section>
+
+  <!-- CERTIFICATES -->
+  <section id="certificates" class="section wrap">
+    <p class="label">~/certificates</p>
+    <h2 data-i18n="certificates.title"></h2>
+    <p class="sub" data-i18n="certificates.sub"></p>
+    <div id="certificates-list"></div>
+  </section>
+
+  <!-- ACHIEVEMENTS (bo'sh bo'lsa yashiriladi) -->
+  <section id="achievements" class="section wrap" hidden>
+    <p class="label">~/achievements</p>
+    <h2 data-i18n="achievements.title"></h2>
+    <div id="achievements-list"></div>
   </section>
 
   <!-- CONTACT -->
@@ -111,6 +141,10 @@
           <div class="stars" id="fb-stars" role="radiogroup" aria-labelledby="fb-rating-label"></div>
         </div>
       </div>
+      <label class="fb-field" for="fb-contact">
+        <span data-i18n="feedback.contact"></span>
+        <input type="text" id="fb-contact" name="contact" maxlength="120" autocomplete="email">
+      </label>
       <label class="fb-field" for="fb-message">
         <span data-i18n="feedback.message"></span>
         <textarea id="fb-message" name="message" rows="5" maxlength="2000" required></textarea>
@@ -118,8 +152,10 @@
       <input type="text" id="fb-honey" name="_honey" tabindex="-1" autocomplete="off" class="fb-honey" aria-hidden="true">
       <div class="fb-actions">
         <button type="submit" class="btn primary" id="fb-submit" data-i18n="feedback.send"></button>
+        <button type="button" class="btn tg" id="fb-telegram" data-i18n="feedback.sendTg"></button>
         <p class="fb-status" id="fb-status" role="status" aria-live="polite"></p>
       </div>
+      <p class="fb-hint" data-i18n="feedback.tgHint"></p>
     </form>
   </section>
 
